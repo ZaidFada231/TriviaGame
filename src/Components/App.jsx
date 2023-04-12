@@ -1,10 +1,12 @@
 import './App.css';
 import Trivia from './Trivia';
+import TriviaTest from './TriviaTest';
+
 
 function App() {
   return (
     <div className="App">
-      <Trivia></Trivia>
+      <TriviaTest></TriviaTest>
     </div>
   );
 }
