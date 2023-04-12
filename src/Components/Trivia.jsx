@@ -1,58 +1,57 @@
 import React, {useState, useEffect} from "react";
-const responses = [
-        {
-        "question": [],
-        "correct": [],
-        "incorrect": []
-        }
-];
-// let responses = [];
-
 export default function Trivia(){
-    // const [questions, setQuestions] = useState([]);
-    // useEffect(() => {
-    //     generateQuestions(setQuestions);
-    // }, []);
-    // var numQuestion = 0;
-    // console.log(questions);
-    // questions.forEach((item) => {
-    //     responses[numQuestion].question.push(item.question);
-    //     console.log(responses[numQuestion].incorrect);
-    //     for(var i = 0; i < item.incorrect_answers.length; i++){
-    //         responses[numQuestion].incorrect.push(item.incorrect_answers[i]);
-    //     }
-    //     responses[numQuestion].correct.push(item.correct_answer);
-    //     numQuestion++;
-    // });
-    // questions.forEach((item) => {
-    //     responses.push(
-    //         {
-    //             "question": item.question,
-    //             "correct": item.correct_answer,
-    //             "incorrect": item.incorrect_answers
-    //         }
-    //     );
-    // });
-    
+    const [triviaQuestion, setTriviaQuestion] = useState([]);
+    const [allResponses, setAllResponses] = useState([]);
+    const [questions, setQuestion] = useState([]);
 
-    const incorrectResponses = responses[0].incorrect;
+    let allAnswers = [];
+    let question = [];
+    triviaQuestion.map((item) => {
+        question.push(item.question);
+        item.incorrect_answers.map((incorrectAns) => {
+            allAnswers.push(incorrectAns);
+        });
+        allAnswers.push(item.correct_answer);
+    });
+    allAnswers.sort(() => Math.random() - 0.5);
+    console.log(allAnswers);
+    useEffect(() => {
+        setAllResponses(allAnswers); 
+    }, []);
+    useEffect(() => {
+        generateQuestions(setTriviaQuestion);
+    }, []); 
+    
+    const generateQuestions = (setData) => {
+        fetch("https://opentdb.com/api.php?amount=1")   
+            .then((res) => res.json())
+            .then((data) => setData(data.results))
+    };
+    function remCharacters(question) {
+        return question.replace(/(&quot\;)/g, "\"").replace(/(&rsquo\;)/g, "\"").replace(/(&#039\;)/g, "\'").replace(/(&amp\;)/g, "\"");
+    }
     return (
         <>
-        <h3>{responses[0].question[0]}</h3>
-        
-        <div>
-        {incorrectResponses.map((response, index) => (
-          <button key={index}>
-            {response}
-          </button>
-        ))}
-        </div>
-        <button>{responses[0].correct[0]}</button>
+        {triviaQuestion.map((triviaData, index) =>
+            <div key={index}>
+              <div>
+                {remCharacters(triviaData.question)}
+              </div>
+              <br />
+              <div>
+                { 
+                    allResponses.map((answer, index) =>
+                    <div key={index}>
+                      <button key={index} >
+                        {remCharacters(answer)}
+                      </button>
+                    </div>
+                  )
+                }
+              </div>
+            </div>
+          )}
         </>
     )
 }
-const generateQuestions = (setData) => {
-    fetch("https://opentdb.com/api.php?amount=1")
-        .then((res) => res.json())
-        .then((data) => setData(data.results));
-};
+
